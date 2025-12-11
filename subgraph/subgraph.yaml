@@ -1,0 +1,31 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: ERC6551Registry
+    # Update this to your target network
+    network: mainnet
+    source:
+      # Update this to your deployed registry address
+      address: "0x0000000000000000000000000000000000000000"
+      abi: ERC6551Registry
+      # Update this to the block number of your deployment
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - TokenBoundAccount
+        - AccountCreatedEvent
+        - Registry
+        - TokenContract
+        - ImplementationContract
+      abis:
+        - name: ERC6551Registry
+          file: ../artifacts/contracts/registry/ERC6551Registry.sol/ERC6551Registry.json
+      eventHandlers:
+        - event: ERC6551AccountCreated(address,indexed address,bytes32,uint256,indexed address,indexed uint256)
+          handler: handleERC6551AccountCreated
+      file: ./src/mappings.ts

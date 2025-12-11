@@ -1,0 +1,56 @@
+{
+  "name": "@settlemint/solidity-token-erc6551",
+  "version": "1.0.0",
+  "description": "ERC-6551 Token Bound Accounts implementation with optional ERC-1271 signature validation",
+  "license": "MIT",
+  "author": "SettleMint <support@settlemint.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/settlemint/solidity-token-erc6551.git"
+  },
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "erc6551",
+    "token-bound-accounts",
+    "nft",
+    "smart-contracts"
+  ],
+  "files": [
+    "contracts/**/*.sol",
+    "artifacts/**/*.json"
+  ],
+  "scripts": {
+    "build": "hardhat compile",
+    "test": "forge test -vvv",
+    "test:gas": "forge test --gas-report",
+    "deploy:local": "hardhat ignition deploy ignition/modules/TokenBoundAccountRegistry.ts --network localhost",
+    "lint": "solhint 'contracts/**/*.sol'",
+    "clean": "hardhat clean && forge clean",
+    "format": "prettier --write 'contracts/**/*.sol' 'test/**/*.sol'"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0"
+  },
+  "devDependencies": {
+    "@graphprotocol/graph-cli": "^0.68.0",
+    "@graphprotocol/graph-ts": "^0.32.0",
+    "@nomicfoundation/hardhat-foundry": "^1.1.2",
+    "@nomicfoundation/hardhat-ignition": "^0.15.0",
+    "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
+    "@nomiclabs/hardhat-solhint": "^4.0.0",
+    "hardhat": "^2.22.0",
+    "prettier": "^3.2.0",
+    "prettier-plugin-solidity": "^1.3.0",
+    "solhint": "^4.5.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.0",
+    "viem": "^2.0.0"
+  },
+  "trustedDependencies": [
+    "keccak",
+    "protobufjs",
+    "secp256k1"
+  ]
+}

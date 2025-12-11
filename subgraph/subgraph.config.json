@@ -1,0 +1,36 @@
+{
+  "networks": {
+    "mainnet": {
+      "registry": {
+        "address": "0x0000000000000000000000000000000000000000",
+        "startBlock": 0
+      }
+    },
+    "sepolia": {
+      "registry": {
+        "address": "0x0000000000000000000000000000000000000000",
+        "startBlock": 0
+      }
+    },
+    "polygon": {
+      "registry": {
+        "address": "0x0000000000000000000000000000000000000000",
+        "startBlock": 0
+      }
+    },
+    "arbitrum-one": {
+      "registry": {
+        "address": "0x0000000000000000000000000000000000000000",
+        "startBlock": 0
+      }
+    }
+  },
+  "templates": {
+    "subgraph.yaml": {
+      "registry": {
+        "addressPlaceholder": "0x0000000000000000000000000000000000000000",
+        "startBlockPlaceholder": 0
+      }
+    }
+  }
+}

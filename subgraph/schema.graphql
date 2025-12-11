@@ -1,0 +1,125 @@
+# ERC-6551 Token Bound Accounts Subgraph Schema
+# This schema indexes all token-bound accounts created through the registry
+
+"""
+TokenBoundAccount entity represents a deployed token-bound account
+Each account is uniquely identified by its address
+"""
+type TokenBoundAccount @entity {
+  "Account address (lowercase hex)"
+  id: ID!
+
+  "Implementation contract this account proxies to"
+  implementation: Bytes!
+
+  "Chain ID where the bound token exists"
+  chainId: BigInt!
+
+  "Token contract address"
+  tokenContract: Bytes!
+
+  "Token ID that owns this account"
+  tokenId: BigInt!
+
+  "Salt used for CREATE2 deployment"
+  salt: Bytes!
+
+  "Block number when this account was created"
+  createdAtBlock: BigInt!
+
+  "Transaction hash of the creation"
+  createdAtTx: Bytes!
+
+  "Timestamp of creation"
+  createdAtTimestamp: BigInt!
+
+  "Reference to the creation event"
+  creationEvent: AccountCreatedEvent!
+}
+
+"""
+AccountCreatedEvent entity stores the raw event data
+for each ERC6551AccountCreated event
+"""
+type AccountCreatedEvent @entity {
+  "Unique ID: {txHash}-{logIndex}"
+  id: ID!
+
+  "Reference to the created account"
+  account: TokenBoundAccount!
+
+  "Implementation contract address"
+  implementation: Bytes!
+
+  "Chain ID from the event"
+  chainId: BigInt!
+
+  "Token contract address from the event"
+  tokenContract: Bytes!
+
+  "Token ID from the event"
+  tokenId: BigInt!
+
+  "Salt from the event"
+  salt: Bytes!
+
+  "Transaction hash"
+  txHash: Bytes!
+
+  "Block number"
+  blockNumber: BigInt!
+
+  "Block timestamp"
+  timestamp: BigInt!
+
+  "Log index within the transaction"
+  logIndex: BigInt!
+}
+
+"""
+Registry entity tracks the ERC6551Registry contract
+"""
+type Registry @entity {
+  "Registry contract address (lowercase hex)"
+  id: ID!
+
+  "Total number of accounts created"
+  totalAccounts: BigInt!
+
+  "Block number of first indexed event"
+  firstEventBlock: BigInt
+
+  "Block number of most recent indexed event"
+  lastEventBlock: BigInt
+}
+
+"""
+TokenContract entity aggregates accounts by token contract
+"""
+type TokenContract @entity {
+  "Token contract address (lowercase hex)"
+  id: ID!
+
+  "Number of token-bound accounts created for this contract"
+  accountCount: BigInt!
+
+  "List of token IDs that have accounts"
+  tokenIds: [BigInt!]!
+}
+
+"""
+ImplementationContract entity tracks different implementations used
+"""
+type ImplementationContract @entity {
+  "Implementation contract address (lowercase hex)"
+  id: ID!
+
+  "Number of accounts using this implementation"
+  accountCount: BigInt!
+
+  "First time this implementation was used"
+  firstUsedAtBlock: BigInt!
+
+  "Most recent time this implementation was used"
+  lastUsedAtBlock: BigInt!
+}

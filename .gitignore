@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+lib/
+
+# Build outputs
+artifacts/
+cache/
+out/
+forge-cache/
+dist/
+typechain-types/
+
+# Coverage
+coverage/
+coverage.json
+lcov.info
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Hardhat
+cache_hardhat/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Ignition deployments (keep for reference, but don't commit sensitive data)
+ignition/deployments/
+
+# Gas snapshots (optional - remove if you want to track)
+.gas-snapshot
+
+# Subgraph build
+subgraph/build/
+subgraph/generated/
