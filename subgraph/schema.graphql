@@ -123,3 +123,58 @@ type ImplementationContract @entity {
   "Most recent time this implementation was used"
   lastUsedAtBlock: BigInt!
 }
+
+"""
+BatchCreation entity tracks batch account creation operations
+"""
+type BatchCreation @entity {
+  "Unique ID: {txHash}-{logIndex}"
+  id: ID!
+
+  "List of accounts created in this batch"
+  accounts: [TokenBoundAccount!]!
+
+  "Implementation contract used for all accounts"
+  implementation: Bytes!
+
+  "Chain ID for all accounts in the batch"
+  chainId: BigInt!
+
+  "Token contract for all accounts in the batch"
+  tokenContract: Bytes!
+
+  "Number of accounts newly created (vs already existed)"
+  newlyCreated: BigInt!
+
+  "Total number of accounts in the batch"
+  totalInBatch: BigInt!
+
+  "Transaction hash"
+  txHash: Bytes!
+
+  "Block number"
+  blockNumber: BigInt!
+
+  "Block timestamp"
+  timestamp: BigInt!
+}
+
+"""
+BatchRegistry entity tracks the ERC6551BatchRegistry contract
+"""
+type BatchRegistry @entity {
+  "Batch registry contract address (lowercase hex)"
+  id: ID!
+
+  "Total number of batch operations"
+  totalBatches: BigInt!
+
+  "Total accounts created through batch operations"
+  totalAccountsCreated: BigInt!
+
+  "Block number of first batch event"
+  firstEventBlock: BigInt
+
+  "Block number of most recent batch event"
+  lastEventBlock: BigInt
+}

@@ -33,6 +33,21 @@ Adds signature validation capabilities for off-chain authorization:
 |----------|-------------|
 | `ERC1271TokenBoundAccount` | Extended account with ERC-1271 signature validation |
 
+### Batch Operations
+
+Gas-optimized batch account creation:
+
+| Contract | Description |
+|----------|-------------|
+| `ERC6551BatchRegistry` | Batch wrapper for creating multiple accounts in one transaction |
+
+**Gas Savings:**
+| Batch Size | Individual Calls | Batch Call | Savings |
+|------------|-----------------|------------|---------|
+| 10 | ~1,140,000 gas | ~480,000 gas | 58% |
+| 50 | ~5,700,000 gas | ~2,000,000 gas | 65% |
+| 100 | ~11,400,000 gas | ~3,900,000 gas | 66% |
+
 ## Architecture
 
 ```
@@ -177,6 +192,39 @@ if (result == 0x1626ba7e) {
 }
 ```
 
+### Batch Account Creation
+
+```solidity
+import {IERC6551BatchRegistry} from "@settlemint/solidity-token-erc6551/contracts/interfaces/IERC6551BatchRegistry.sol";
+
+// Get the batch registry instance
+IERC6551BatchRegistry batchRegistry = IERC6551BatchRegistry(BATCH_REGISTRY_ADDRESS);
+
+// Create token IDs array
+uint256[] memory tokenIds = new uint256[](3);
+tokenIds[0] = 1;
+tokenIds[1] = 2;
+tokenIds[2] = 3;
+
+// Batch create accounts (up to 100 per transaction)
+address[] memory accounts = batchRegistry.batchCreateAccounts(
+    implementation,  // TokenBoundAccount implementation address
+    salt,           // bytes32 salt (same for all)
+    block.chainid,  // Chain ID
+    tokenContract,  // ERC-721 contract address
+    tokenIds        // Array of token IDs
+);
+
+// Pre-compute addresses without deploying
+(address[] memory addresses, bool[] memory exists) = batchRegistry.batchComputeAddresses(
+    implementation,
+    salt,
+    block.chainid,
+    tokenContract,
+    tokenIds
+);
+```
+
 ## Supported Operations
 
 The `execute` function supports four operation types:
@@ -227,6 +275,8 @@ The subgraph tracks:
 - **Registry**: Aggregate statistics
 - **TokenContract**: Accounts grouped by NFT contract
 - **ImplementationContract**: Usage by implementation
+- **BatchCreation**: Batch operation records
+- **BatchRegistry**: Batch registry statistics
 
 ### Example Query
 
@@ -251,12 +301,14 @@ solidity-token-erc6551/
 │   │   ├── IERC6551Account.sol
 │   │   ├── IERC6551Executable.sol
 │   │   ├── IERC6551Registry.sol
+│   │   ├── IERC6551BatchRegistry.sol
 │   │   └── IERC1271.sol
 │   ├── account/            # Account implementations
 │   │   ├── TokenBoundAccount.sol
 │   │   └── ERC1271TokenBoundAccount.sol
-│   ├── registry/           # Registry contract
-│   │   └── ERC6551Registry.sol
+│   ├── registry/           # Registry contracts
+│   │   ├── ERC6551Registry.sol
+│   │   └── ERC6551BatchRegistry.sol
 │   ├── lib/               # Libraries
 │   │   └── ERC6551BytecodeLib.sol
 │   └── examples/          # Example contracts

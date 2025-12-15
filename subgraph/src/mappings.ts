@@ -1,11 +1,14 @@
 import { BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import { ERC6551AccountCreated } from "../generated/ERC6551Registry/ERC6551Registry";
+import { BatchAccountsCreated } from "../generated/ERC6551BatchRegistry/ERC6551BatchRegistry";
 import {
   TokenBoundAccount,
   AccountCreatedEvent,
   Registry,
   TokenContract,
   ImplementationContract,
+  BatchCreation,
+  BatchRegistry,
 } from "../generated/schema";
 
 // Registry ID (update this to match your deployed registry address)
@@ -130,4 +133,65 @@ function updateImplementation(event: ERC6551AccountCreated): void {
   implementation.accountCount = implementation.accountCount.plus(BigInt.fromI32(1));
   implementation.lastUsedAtBlock = event.block.number;
   implementation.save();
+}
+
+/**
+ * Handles the BatchAccountsCreated event from ERC6551BatchRegistry
+ * Creates BatchCreation entity and updates BatchRegistry stats
+ */
+export function handleBatchAccountsCreated(event: BatchAccountsCreated): void {
+  let txHash = event.transaction.hash;
+  let logIndex = event.logIndex;
+  let batchId = txHash.toHexString() + "-" + logIndex.toString();
+
+  // Create BatchCreation entity
+  let batch = new BatchCreation(batchId);
+
+  // Map account addresses to entity IDs
+  let accountIds: string[] = [];
+  let accounts = event.params.accounts;
+  for (let i = 0; i < accounts.length; i++) {
+    accountIds.push(accounts[i].toHexString().toLowerCase());
+  }
+  batch.accounts = accountIds;
+
+  batch.implementation = event.params.implementation;
+  batch.chainId = event.params.chainId;
+  batch.tokenContract = event.params.tokenContract;
+  batch.newlyCreated = event.params.newlyCreated;
+  batch.totalInBatch = BigInt.fromI32(accounts.length);
+  batch.txHash = txHash;
+  batch.blockNumber = event.block.number;
+  batch.timestamp = event.block.timestamp;
+  batch.save();
+
+  log.info("Created BatchCreation: {} with {} accounts", [
+    batchId,
+    accounts.length.toString(),
+  ]);
+
+  // Update BatchRegistry stats
+  updateBatchRegistry(event);
+}
+
+/**
+ * Updates the BatchRegistry entity with aggregate statistics
+ */
+function updateBatchRegistry(event: BatchAccountsCreated): void {
+  let batchRegistryId = event.address.toHexString().toLowerCase();
+  let batchRegistry = BatchRegistry.load(batchRegistryId);
+
+  if (batchRegistry == null) {
+    batchRegistry = new BatchRegistry(batchRegistryId);
+    batchRegistry.totalBatches = BigInt.fromI32(0);
+    batchRegistry.totalAccountsCreated = BigInt.fromI32(0);
+    batchRegistry.firstEventBlock = event.block.number;
+  }
+
+  batchRegistry.totalBatches = batchRegistry.totalBatches.plus(BigInt.fromI32(1));
+  batchRegistry.totalAccountsCreated = batchRegistry.totalAccountsCreated.plus(
+    BigInt.fromI32(event.params.accounts.length)
+  );
+  batchRegistry.lastEventBlock = event.block.number;
+  batchRegistry.save();
 }

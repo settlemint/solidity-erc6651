@@ -154,7 +154,7 @@ contract ERC6551RegistryTest is Test {
         assertTrue(addr1 != addr2, "Different chain IDs should have different addresses");
     }
 
-    function test_Account_DifferentTokenContractsDifferentAddresses() public view {
+    function test_Account_DifferentTokenContractsDifferentAddresses() public {
         ExampleNFT nft2 = new ExampleNFT("NFT 2", "NFT2", "");
 
         address addr1 = registry.account(

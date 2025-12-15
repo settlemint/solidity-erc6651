@@ -29,3 +29,29 @@ dataSources:
         - event: ERC6551AccountCreated(address,indexed address,bytes32,uint256,indexed address,indexed uint256)
           handler: handleERC6551AccountCreated
       file: ./src/mappings.ts
+
+  - kind: ethereum
+    name: ERC6551BatchRegistry
+    # Update this to your target network
+    network: mainnet
+    source:
+      # Update this to your deployed batch registry address
+      address: "0x0000000000000000000000000000000000000000"
+      abi: ERC6551BatchRegistry
+      # Update this to the block number of your deployment
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - BatchCreation
+        - BatchRegistry
+        - TokenBoundAccount
+      abis:
+        - name: ERC6551BatchRegistry
+          file: ../artifacts/contracts/registry/ERC6551BatchRegistry.sol/ERC6551BatchRegistry.json
+      eventHandlers:
+        - event: BatchAccountsCreated(address[],indexed address,indexed uint256,indexed address,uint256)
+          handler: handleBatchAccountsCreated
+      file: ./src/mappings.ts

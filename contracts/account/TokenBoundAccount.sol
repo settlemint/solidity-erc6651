@@ -64,18 +64,25 @@ contract TokenBoundAccount is IERC6551Account, IERC6551Executable, IERC165 {
      * @inheritdoc IERC6551Account
      * @dev Reads the token information from the bytecode appended during deployment
      *      The data is stored at a fixed offset in the deployed bytecode:
-     *      - Offset 0x4d (77 bytes from start): Start of appended data
+     *      - Offset 0x2d (45 bytes from start): Start of appended data (salt)
+     *      - Offset 0x4d (77 bytes from start): Start of chainId
      *      - Layout: [salt (32)][chainId (32)][tokenContract (32)][tokenId (32)]
-     *      We skip salt and read chainId, tokenContract, tokenId (96 bytes starting at 0x6d)
+     *      We skip salt and read chainId, tokenContract, tokenId (96 bytes starting at 0x4d)
      */
     function token() public view virtual override returns (uint256 chainId, address tokenContract, uint256 tokenId) {
         bytes memory data = new bytes(96);
 
         assembly {
-            // Copy 96 bytes from bytecode offset 0x6d (after salt) to memory
-            // 0x4d = start of appended data (salt)
-            // 0x6d = 0x4d + 32 = start of chainId
-            extcodecopy(address(), add(data, 0x20), 0x6d, 0x60)
+            // Copy 96 bytes from bytecode offset 0x4d (start of chainId) to memory
+            // Runtime bytecode layout:
+            // 0x00 - 0x09: EIP-1167 header (10 bytes)
+            // 0x0a - 0x1d: implementation address (20 bytes)
+            // 0x1e - 0x2c: EIP-1167 footer (15 bytes)
+            // 0x2d - 0x4c: salt (32 bytes)
+            // 0x4d - 0x6c: chainId (32 bytes) <-- start reading here
+            // 0x6d - 0x8c: tokenContract (32 bytes)
+            // 0x8d - 0xac: tokenId (32 bytes)
+            extcodecopy(address(), add(data, 0x20), 0x4d, 0x60)
         }
 
         // Decode the packed data
@@ -135,9 +142,11 @@ contract TokenBoundAccount is IERC6551Account, IERC6551Executable, IERC165 {
             (success, result) = to.delegatecall(data);
         } else if (operation == 2) {
             // CREATE
+            // Copy calldata to memory for assembly access
+            bytes memory initCode = data;
             address deployed;
             assembly {
-                deployed := create(value, add(data, 0x20), mload(data))
+                deployed := create(value, add(initCode, 0x20), mload(initCode))
             }
             success = deployed != address(0);
             result = abi.encode(deployed);

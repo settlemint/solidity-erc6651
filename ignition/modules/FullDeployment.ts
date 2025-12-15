@@ -21,6 +21,9 @@ const FullDeploymentModule = buildModule("FullDeployment", (m) => {
   // Deploy the registry
   const registry = m.contract("ERC6551Registry");
 
+  // Deploy batch registry wrapper
+  const batchRegistry = m.contract("ERC6551BatchRegistry", [registry]);
+
   // Deploy implementations
   const tokenBoundAccount = m.contract("TokenBoundAccount");
   const erc1271Account = m.contract("ERC1271TokenBoundAccount");
@@ -33,6 +36,7 @@ const FullDeploymentModule = buildModule("FullDeployment", (m) => {
 
   return {
     registry,
+    batchRegistry,
     tokenBoundAccount,
     erc1271Account,
     exampleNFT,

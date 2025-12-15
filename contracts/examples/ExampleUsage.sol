@@ -164,7 +164,7 @@ contract ExampleUsage {
         }
 
         // Get token info and lookup owner
-        (uint256 chainId, address tokenContract, uint256 tokenId) = IERC6551Account(account).token();
+        (uint256 chainId, address tokenContract, uint256 tokenId) = IERC6551Account(payable(account)).token();
 
         if (chainId != block.chainid) {
             return address(0);
@@ -184,7 +184,7 @@ contract ExampleUsage {
             return 0;
         }
 
-        return IERC6551Account(account).state();
+        return IERC6551Account(payable(account)).state();
     }
 
     /**
