@@ -2,107 +2,307 @@
 
 ## What is ERC-6551?
 
-**ERC-6551** introduces **Token Bound Accounts (TBAs)** - smart contract wallets that are owned and controlled by NFTs. Every NFT can have its own Ethereum account that can:
+**ERC-6551** gives every NFT its own smart contract wallet. Think of it as a backpack attached to your NFT - it can hold ETH, tokens, other NFTs, and interact with any dApp.
 
-- Hold ETH, ERC-20 tokens, and other NFTs
-- Execute transactions
-- Interact with any smart contract
-- Sign messages (with ERC-1271)
-
-### The Key Insight
-
-When you transfer an NFT, **everything in its TBA goes with it**. The NFT becomes a portable identity/inventory that carries all its assets.
+**The magic**: When you transfer the NFT, the wallet and everything inside transfers with it.
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                         NFT #1                              │
-│                    (owned by Alice)                         │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │              Token Bound Account                      │  │
-│  │                                                       │  │
-│  │   💰 2.5 ETH                                         │  │
-│  │   🪙 1000 USDC                                       │  │
-│  │   🖼️ NFT Collection Items                            │  │
-│  │   📜 DAO Voting Rights                               │  │
-│  │                                                       │  │
-│  └───────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-                           │
-                           │ Transfer NFT #1 to Bob
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│                         NFT #1                              │
-│                     (owned by Bob)                          │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │              Token Bound Account                      │  │
-│  │           (Bob now controls everything)              │  │
-│  │                                                       │  │
-│  │   💰 2.5 ETH                                         │  │
-│  │   🪙 1000 USDC                                       │  │
-│  │   🖼️ NFT Collection Items                            │  │
-│  │   📜 DAO Voting Rights                               │  │
-│  │                                                       │  │
-│  └───────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────┐
+│              NFT #42                   │
+│           (owned by Alice)             │
+│  ┌──────────────────────────────────┐  │
+│  │     Token Bound Account          │  │
+│  │                                  │  │
+│  │   💰 2.5 ETH                     │  │
+│  │   🪙 1000 USDC                   │  │
+│  │   🖼️ 3 other NFTs                │  │
+│  └──────────────────────────────────┘  │
+└────────────────────────────────────────┘
+              │
+              │  Alice transfers NFT to Bob
+              ▼
+┌────────────────────────────────────────┐
+│              NFT #42                   │
+│            (owned by Bob)              │
+│  ┌──────────────────────────────────┐  │
+│  │     Token Bound Account          │  │
+│  │     (Bob controls it now)        │  │
+│  │                                  │  │
+│  │   💰 2.5 ETH                     │  │
+│  │   🪙 1000 USDC                   │  │
+│  │   🖼️ 3 other NFTs                │  │
+│  └──────────────────────────────────┘  │
+└────────────────────────────────────────┘
 ```
-
-## Architecture
-
-### Core Components
-
-| Contract | Purpose |
-|----------|---------|
-| `ERC6551Registry` | Creates TBAs using CREATE2 for deterministic addresses |
-| `ERC6551BatchRegistry` | Gas-optimized batch creation (58-66% savings) |
-| `TokenBoundAccount` | Base account with execute capability |
-| `ERC1271TokenBoundAccount` | Extended account with signature validation |
-
-### How It Works
-
-1. **Deterministic Addresses**: Account addresses are computed from `(implementation, salt, chainId, tokenContract, tokenId)`
-2. **Minimal Proxies**: Each TBA is only 173 bytes (ERC-1167 proxy pattern)
-3. **Immutable Binding**: Token info is encoded in the proxy bytecode
-4. **Dynamic Ownership**: `owner()` queries the NFT contract in real-time
 
 ## Quick Start
 
-### 1. Deploy the Contracts
+### 1. Install & Test
 
 ```bash
-# Using Hardhat Ignition
+bun install && forge install
+forge test
+```
+
+### 2. Deploy to SettleMint Platform
+
+```bash
+bunx settlemint login
+bunx settlemint connect
+bunx settlemint scs hardhat deploy remote --blockchain-node <your-node> -m ignition/modules/main.ts
+```
+
+### 3. Deploy Subgraph (Optional)
+
+```bash
+bunx settlemint scs subgraph build
+bunx settlemint scs subgraph deploy <subgraph-name>
+```
+
+---
+
+## End-to-End Demo (Show Your Boss in 5 Minutes)
+
+After deploying, run the demo script to see everything working:
+
+```bash
+# Terminal 1: Start local node
+anvil
+
+# Terminal 2: Deploy contracts
 npx hardhat ignition deploy ignition/modules/main.ts --network localhost
+
+# Terminal 3: Run demo
+node demo.mjs
 ```
 
-### 2. Create a Token Bound Account
+**What the demo does:**
 
-```solidity
-// Get the registry and implementation addresses from deployment
-ERC6551Registry registry = ERC6551Registry(REGISTRY_ADDRESS);
-address implementation = IMPLEMENTATION_ADDRESS;
+```
+=== ERC-6551 Token Bound Accounts Demo ===
 
-// Create an account for your NFT
-address account = registry.createAccount(
-    implementation,      // Account implementation
-    bytes32(0),          // Salt (use 0 for default)
-    block.chainid,       // Current chain
-    NFT_CONTRACT,        // Your NFT contract
-    TOKEN_ID             // Your token ID
-);
+1. Minting NFT...
+   Minted NFT #0 to 0xf39Fd6e5...
+
+2. Predicted TBA address: 0x1234...
+   Code before creation: 0 bytes (not deployed)
+
+3. Creating Token Bound Account...
+   Gas used: 85000
+
+4. TBA deployed! Bytecode: 173 bytes
+   (Minimal proxy: 45 bytes + token data: 128 bytes)
+
+5. TBA is bound to:
+   Chain ID: 31337
+   NFT Contract: 0x2279B7A0...
+   Token ID: 0
+
+6. TBA Owner: 0xf39Fd6e5...
+   (Same as wallet that owns the NFT!)
+
+7. Sending 1 ETH to TBA...
+   TBA balance: 1 ETH
+
+8. Executing: TBA sends 0.5 ETH to recipient...
+   Gas used: 35000
+   TBA balance after: 0.5 ETH
+
+=== Key Takeaways ===
+• NFT owner controls the TBA
+• TBA can hold ETH/tokens and execute transactions
+• If NFT is transferred, new owner controls TBA
 ```
 
-### 3. Execute Transactions
+---
 
-```solidity
-TokenBoundAccount tba = TokenBoundAccount(payable(account));
+## Manual Demo with Cast (CLI)
 
-// Only the NFT owner can execute
-tba.execute(
-    recipient,           // Target address
-    1 ether,             // Value to send
-    "",                  // Calldata (empty for ETH transfer)
-    0                    // Operation type (0 = CALL)
-);
+If you prefer command-line, here's the same flow using `cast`:
+
+```bash
+# Set contract addresses (replace with your deployed addresses)
+export REGISTRY=0xa513E6E4b8f2a923D98304ec87F64353C4D5C853
+export IMPL=0x8A791620dd6260079BF849Dc5567aDC3F2FdC318
+export NFT=0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6
+export PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+# 1. Mint an NFT
+cast send $NFT "mint(address)" 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --private-key $PRIVATE_KEY
+
+# 2. Get predicted TBA address for token #0
+cast call $REGISTRY "account(address,bytes32,uint256,address,uint256)" \
+  $IMPL 0x0000000000000000000000000000000000000000000000000000000000000000 31337 $NFT 0
+
+# 3. Create the TBA
+cast send $REGISTRY "createAccount(address,bytes32,uint256,address,uint256)" \
+  $IMPL 0x0000000000000000000000000000000000000000000000000000000000000000 31337 $NFT 0 \
+  --private-key $PRIVATE_KEY
+
+# 4. Send 1 ETH to TBA
+export TBA=<address-from-step-2>
+cast send $TBA --value 1ether --private-key $PRIVATE_KEY
+
+# 5. Check TBA balance
+cast balance $TBA
+
+# 6. Execute from TBA (send 0.5 ETH)
+cast send $TBA "execute(address,uint256,bytes,uint8)" \
+  0x70997970C51812dc3A010C7d01b50e0d17dc79C8 500000000000000000 0x 0 \
+  --private-key $PRIVATE_KEY
+
+# 7. Check owner (should match NFT owner)
+cast call $TBA "owner()"
 ```
+
+---
+
+## Query the Subgraph
+
+After deploying the subgraph, you can query all Token Bound Accounts:
+
+### Get All Token Bound Accounts
+
+```graphql
+{
+  tokenBoundAccounts(first: 10, orderBy: createdAtTimestamp, orderDirection: desc) {
+    id
+    tokenContract {
+      id
+    }
+    tokenId
+    chainId
+    owner {
+      id
+    }
+    createdAtTimestamp
+  }
+}
+```
+
+### Get Accounts for a Specific NFT Collection
+
+```graphql
+{
+  tokenContract(id: "0x2279b7a0a67db372996a5fab50d91eaa73d2ebe6") {
+    id
+    accountCount
+    accounts(first: 100) {
+      id
+      tokenId
+      owner {
+        id
+      }
+    }
+  }
+}
+```
+
+### Get Recent Account Creations
+
+```graphql
+{
+  accountCreatedEvents(first: 20, orderBy: timestamp, orderDirection: desc) {
+    id
+    timestamp
+    account {
+      id
+      tokenId
+    }
+    from {
+      id
+    }
+    tokenContract
+  }
+}
+```
+
+### Get Batch Creations
+
+```graphql
+{
+  batchCreations(first: 10, orderBy: timestamp, orderDirection: desc) {
+    id
+    totalInBatch
+    newlyCreated
+    tokenContract
+    timestamp
+    accounts
+  }
+}
+```
+
+### Query Using curl
+
+```bash
+# Replace with your subgraph endpoint
+SUBGRAPH_URL="https://your-subgraph.settlemint.com/subgraphs/name/erc6551"
+
+curl -X POST $SUBGRAPH_URL \
+  -H "Content-Type: application/json" \
+  -d '{"query": "{ tokenBoundAccounts(first: 5) { id tokenId owner { id } } }"}'
+```
+
+---
+
+## Integration Examples
+
+### JavaScript/TypeScript (viem)
+
+```typescript
+import { createPublicClient, http, parseAbi } from 'viem';
+
+const client = createPublicClient({
+  chain: yourChain,
+  transport: http('YOUR_RPC_URL')
+});
+
+const registryAbi = parseAbi([
+  'function createAccount(address,bytes32,uint256,address,uint256) returns (address)',
+  'function account(address,bytes32,uint256,address,uint256) view returns (address)',
+]);
+
+// Compute address
+const tbaAddress = await client.readContract({
+  address: REGISTRY,
+  abi: registryAbi,
+  functionName: 'account',
+  args: [implementation, salt, chainId, nftContract, tokenId]
+});
+
+// Check if deployed
+const code = await client.getCode({ address: tbaAddress });
+const isDeployed = code && code.length > 2;
+```
+
+### Ethers.js
+
+```javascript
+const { ethers } = require('ethers');
+
+const provider = new ethers.JsonRpcProvider('YOUR_RPC_URL');
+const wallet = new ethers.Wallet(privateKey, provider);
+
+const registry = new ethers.Contract(REGISTRY, [
+  'function createAccount(address,bytes32,uint256,address,uint256) returns (address)',
+  'function account(address,bytes32,uint256,address,uint256) view returns (address)',
+], wallet);
+
+// Create TBA
+const tx = await registry.createAccount(impl, salt, chainId, nft, tokenId);
+await tx.wait();
+```
+
+## Contracts Overview
+
+| Contract | What it does |
+|----------|--------------|
+| `ERC6551Registry` | Creates accounts for NFTs |
+| `ERC6551BatchRegistry` | Creates many accounts at once (saves gas) |
+| `TokenBoundAccount` | The wallet itself - holds assets, executes transactions |
+| `ERC1271TokenBoundAccount` | Same as above + can verify signatures |
+| `ExampleNFT` | Sample NFT for testing |
+| `ExampleUsage` | Helper contract showing integration patterns |
 
 ## Detailed Usage
 
