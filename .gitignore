@@ -1,49 +1,56 @@
-# Dependencies
-node_modules/
-lib/
+node_modules
+.env
 
-# Build outputs
-artifacts/
-cache/
-out/
+# Hardhat files
+/cache
+/artifacts
+
+# TypeChain files
+/typechain
+/typechain-types
+
+# solidity-coverage files
+/coverage
+/coverage.json
+
+# Compiler files
+cache_forge/
 forge-cache/
-dist/
-typechain-types/
+out/
 
-# Coverage
-coverage/
-coverage.json
+# Ignores development broadcast logs
+!/broadcast
+/broadcast/*/31337/
+/broadcast/**/dry-run/
+
+# Dotenv file
+.env
+
+# Local env file
+**/.env.local
+
+# Subgraphs
+generated
+build
+
+.pnpm
 lcov.info
 
-# Environment
-.env
-.env.local
-.env.*.local
+# Hardhat Ignition
+ignition/deployments/chain-*
 
-# IDE
-.idea/
+# Soldeer
+/dependencies
+
+# Separate projects (not part of this repo)
+solidity-token-erc20/
+
+# IDE/Editor
 .vscode/
-*.swp
-*.swo
-*~
+.idea/
 
-# OS
+# OS files
 .DS_Store
-Thumbs.db
 
-# Hardhat
-cache_hardhat/
-
-# Logs
-*.log
-npm-debug.log*
-
-# Ignition deployments (keep for reference, but don't commit sensitive data)
-ignition/deployments/
-
-# Gas snapshots (optional - remove if you want to track)
-.gas-snapshot
-
-# Subgraph build
-subgraph/build/
-subgraph/generated/
+# Claude settings (local only)
+.claude/

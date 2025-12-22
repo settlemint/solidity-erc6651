@@ -1,0 +1,20 @@
+  - kind: ethereum/contract
+    name: {id}
+    network: {chain}
+    source:
+      address: '{address}'
+      abi: IERC6551BatchRegistry
+      startBlock: {startBlock}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - ERC6551BatchContract
+      abis:
+        - name: IERC6551BatchRegistry
+          file: {root}/out/ERC6551BatchRegistry.sol/ERC6551BatchRegistry.json
+      eventHandlers:
+        - event: BatchAccountsCreated(address[],indexed address,indexed uint256,indexed address,uint256)
+          handler: handleBatchAccountsCreated
+      file: {file}

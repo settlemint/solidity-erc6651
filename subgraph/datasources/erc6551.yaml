@@ -1,0 +1,20 @@
+  - kind: ethereum/contract
+    name: {id}
+    network: {chain}
+    source:
+      address: '{address}'
+      abi: IERC6551Registry
+      startBlock: {startBlock}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - ERC6551Contract
+      abis:
+        - name: IERC6551Registry
+          file: {root}/out/ERC6551Registry.sol/ERC6551Registry.json
+      eventHandlers:
+        - event: ERC6551AccountCreated(address,indexed address,bytes32,uint256,indexed address,indexed uint256)
+          handler: handleERC6551AccountCreated
+      file: {file}

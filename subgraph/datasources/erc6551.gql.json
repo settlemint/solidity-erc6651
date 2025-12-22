@@ -1,0 +1,70 @@
+[{
+  "name": "Account",
+  "fields": [
+    { "name": "id",                        "type": "Bytes!"                                          },
+    { "name": "asERC6551",                 "type": "ERC6551Contract"                                 },
+    { "name": "tokenBoundAccounts",        "type": "TokenBoundAccount!",    "derived": "owner"       },
+    { "name": "createdAccountsFrom",       "type": "AccountCreatedEvent!",  "derived": "from"        }
+  ]
+},{
+  "name": "ERC6551Contract",
+  "immutable": true,
+  "fields": [
+    { "name": "id",                        "type": "Bytes!"                                          },
+    { "name": "asAccount",                 "type": "Account!"                                        },
+    { "name": "totalAccounts",             "type": "BigInt!"                                         },
+    { "name": "firstEventBlock",           "type": "BigInt"                                          },
+    { "name": "lastEventBlock",            "type": "BigInt"                                          },
+    { "name": "accounts",                  "type": "TokenBoundAccount!",    "derived": "registry"    },
+    { "name": "events",                    "type": "AccountCreatedEvent!",  "derived": "registry"    }
+  ]
+},{
+  "name": "TokenBoundAccount",
+  "immutable": true,
+  "fields": [
+    { "name": "id",                        "type": "Bytes!"                                          },
+    { "name": "registry",                  "type": "ERC6551Contract!"                                },
+    { "name": "implementation",            "type": "ImplementationContract!"                         },
+    { "name": "chainId",                   "type": "BigInt!"                                         },
+    { "name": "tokenContract",             "type": "TokenContract!"                                  },
+    { "name": "tokenId",                   "type": "BigInt!"                                         },
+    { "name": "salt",                      "type": "Bytes!"                                          },
+    { "name": "owner",                     "type": "Account"                                         },
+    { "name": "createdAtBlock",            "type": "BigInt!"                                         },
+    { "name": "createdAtTimestamp",        "type": "BigInt!"                                         },
+    { "name": "creationEvent",             "type": "AccountCreatedEvent"                             }
+  ]
+},{
+  "name": "TokenContract",
+  "fields": [
+    { "name": "id",                        "type": "Bytes!"                                          },
+    { "name": "accountCount",              "type": "BigInt!"                                         },
+    { "name": "accounts",                  "type": "TokenBoundAccount!",    "derived": "tokenContract" }
+  ]
+},{
+  "name": "ImplementationContract",
+  "fields": [
+    { "name": "id",                        "type": "Bytes!"                                          },
+    { "name": "accountCount",              "type": "BigInt!"                                         },
+    { "name": "firstUsedAtBlock",          "type": "BigInt!"                                         },
+    { "name": "lastUsedAtBlock",           "type": "BigInt!"                                         },
+    { "name": "accounts",                  "type": "TokenBoundAccount!",    "derived": "implementation" }
+  ]
+},{
+  "name": "AccountCreatedEvent",
+  "parent": "Event",
+  "immutable": true,
+  "fields": [
+    { "name": "emitter",                   "type": "Account!"                                        },
+    { "name": "transaction",               "type": "Transaction!"                                    },
+    { "name": "timestamp",                 "type": "BigInt!"                                         },
+    { "name": "registry",                  "type": "ERC6551Contract!"                                },
+    { "name": "account",                   "type": "TokenBoundAccount!"                              },
+    { "name": "implementation",            "type": "Bytes!"                                          },
+    { "name": "chainId",                   "type": "BigInt!"                                         },
+    { "name": "tokenContract",             "type": "Bytes!"                                          },
+    { "name": "tokenId",                   "type": "BigInt!"                                         },
+    { "name": "salt",                      "type": "Bytes!"                                          },
+    { "name": "from",                      "type": "Account!"                                        }
+  ]
+}]

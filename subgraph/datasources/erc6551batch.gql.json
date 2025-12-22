@@ -1,0 +1,28 @@
+[{
+  "name": "ERC6551BatchContract",
+  "immutable": true,
+  "fields": [
+    { "name": "id",                        "type": "Bytes!"                                          },
+    { "name": "asAccount",                 "type": "Account!"                                        },
+    { "name": "totalBatches",              "type": "BigInt!"                                         },
+    { "name": "totalAccountsCreated",      "type": "BigInt!"                                         },
+    { "name": "firstEventBlock",           "type": "BigInt"                                          },
+    { "name": "lastEventBlock",            "type": "BigInt"                                          },
+    { "name": "batches",                   "type": "BatchCreation!",        "derived": "registry"    }
+  ]
+},{
+  "name": "BatchCreation",
+  "immutable": true,
+  "fields": [
+    { "name": "id",                        "type": "ID!"                                             },
+    { "name": "registry",                  "type": "ERC6551BatchContract!"                           },
+    { "name": "accounts",                  "type": "[String!]!"                                      },
+    { "name": "implementation",            "type": "Bytes!"                                          },
+    { "name": "chainId",                   "type": "BigInt!"                                         },
+    { "name": "tokenContract",             "type": "Bytes!"                                          },
+    { "name": "newlyCreated",              "type": "BigInt!"                                         },
+    { "name": "totalInBatch",              "type": "BigInt!"                                         },
+    { "name": "blockNumber",               "type": "BigInt!"                                         },
+    { "name": "timestamp",                 "type": "BigInt!"                                         }
+  ]
+}]

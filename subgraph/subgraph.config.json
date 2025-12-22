@@ -1,36 +1,18 @@
 {
-  "networks": {
-    "mainnet": {
-      "registry": {
-        "address": "0x0000000000000000000000000000000000000000",
-        "startBlock": 0
-      }
+  "output": "generated/scs.",
+  "chain": "localhost",
+  "datasources": [
+    {
+      "name": "ERC6551Registry",
+      "address": "0x0000000000000000000000000000000000000000",
+      "startBlock": 0,
+      "module": ["erc6551"]
     },
-    "sepolia": {
-      "registry": {
-        "address": "0x0000000000000000000000000000000000000000",
-        "startBlock": 0
-      }
-    },
-    "polygon": {
-      "registry": {
-        "address": "0x0000000000000000000000000000000000000000",
-        "startBlock": 0
-      }
-    },
-    "arbitrum-one": {
-      "registry": {
-        "address": "0x0000000000000000000000000000000000000000",
-        "startBlock": 0
-      }
+    {
+      "name": "ERC6551BatchRegistry",
+      "address": "0x0000000000000000000000000000000000000000",
+      "startBlock": 0,
+      "module": ["erc6551batch"]
     }
-  },
-  "templates": {
-    "subgraph.yaml": {
-      "registry": {
-        "addressPlaceholder": "0x0000000000000000000000000000000000000000",
-        "startBlockPlaceholder": 0
-      }
-    }
-  }
+  ]
 }
