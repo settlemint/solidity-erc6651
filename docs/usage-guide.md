@@ -35,6 +35,63 @@
 └────────────────────────────────────────┘
 ```
 
+## What Can Be Tokenized as NFTs?
+
+NFTs can represent **any digital or physical asset**. The NFT itself is a unique on-chain token that points to metadata (usually stored on IPFS or a server). ERC-6551 works with any NFT regardless of what it represents.
+
+### Supported File Types
+
+| Category | File Extensions | Use Cases |
+|----------|-----------------|-----------|
+| **Images** | `.jpg`, `.jpeg`, `.png`, `.gif`, `.svg`, `.webp`, `.bmp`, `.tiff` | Digital art, photographs, profile pictures, collectibles |
+| **Video** | `.mp4`, `.avi`, `.mov`, `.webm`, `.mkv`, `.m4v` | Video art, movies, clips, animations |
+| **Audio** | `.mp3`, `.wav`, `.flac`, `.aac`, `.ogg`, `.m4a` | Music, podcasts, sound effects, audio collectibles |
+| **3D Models** | `.glb`, `.gltf`, `.obj`, `.fbx`, `.stl` | Metaverse assets, virtual real estate, game items |
+| **Documents** | `.pdf`, `.doc`, `.docx`, `.txt`, `.md` | Certificates, licenses, legal documents, tickets |
+| **Archives** | `.zip`, `.tar`, `.gz` | Software, datasets, bundles |
+
+### Beyond Files: Real-World Assets (RWA)
+
+NFTs can also represent assets that aren't files:
+
+| Asset Type | Examples |
+|------------|----------|
+| **Physical Items** | Luxury goods, real estate deeds, art pieces, collectible cards |
+| **Identity** | Membership cards, credentials, access passes, loyalty points |
+| **Financial** | Bonds, invoices, royalty rights, fractional ownership |
+| **Gaming** | Characters, weapons, skins, virtual land, in-game items |
+| **Tickets** | Event tickets, boarding passes, reservations |
+
+### How It Works with ERC-6551
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     NFT (ERC-721)                           │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │  Token ID: 42                                         │  │
+│  │  Metadata URI: ipfs://Qm.../metadata.json            │  │
+│  │                                                       │  │
+│  │  {                                                    │  │
+│  │    "name": "My Video NFT",                           │  │
+│  │    "image": "ipfs://Qm.../thumbnail.jpg",            │  │
+│  │    "animation_url": "ipfs://Qm.../video.mp4"         │  │
+│  │  }                                                    │  │
+│  └───────────────────────────────────────────────────────┘  │
+│                            │                                │
+│                            ▼                                │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │           Token Bound Account (ERC-6551)              │  │
+│  │                                                       │  │
+│  │   Can hold: ETH, ERC-20 tokens, other NFTs           │  │
+│  │   Can do: Execute transactions, sign messages        │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Key point**: ERC-6551 doesn't care what the NFT represents - it gives ANY NFT its own wallet. Whether your NFT is a JPEG, a video, or a real estate deed, it can have a Token Bound Account.
+
+---
+
 ## Quick Start
 
 ### 1. Install & Test
