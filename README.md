@@ -63,6 +63,60 @@ Hardhat consists of:
 - **Hardhat Ignition**: Declarative deployment system that enables you to deploy your smart contracts without navigating the mechanics of the deployment process.
 - **Hardhat Network**: Declarative deployment system that enables you to deploy your smart contracts without navigating the mechanics of the deployment process.
 
+## Deployment
+
+### Using SettleMint Platform (Recommended)
+
+The SettleMint CLI handles all configuration automatically - no `.env` files needed.
+
+```bash
+# 1. Install the CLI (if not already installed)
+bun add @settlemint/sdk-cli
+
+# 2. Login to SettleMint
+bunx settlemint login
+
+# 3. Connect to your application (select workspace, app, blockchain node, and graph middleware)
+bunx settlemint connect
+
+# 4. Deploy contracts to your blockchain node
+bunx settlemint scs hardhat deploy remote --blockchain-node <your-node-name> -m ignition/modules/main.ts
+
+# 5. Build and deploy the subgraph
+bunx settlemint scs subgraph build
+bunx settlemint scs subgraph deploy <subgraph-name>
+```
+
+### Using Local Anvil
+
+```bash
+# Terminal 1: Start local node
+anvil
+
+# Terminal 2: Deploy
+npx hardhat ignition deploy ignition/modules/main.ts --network localhost
+```
+
+### VS Code Tasks
+
+Use the pre-configured VS Code tasks (Ctrl+Shift+P → "Tasks: Run Task"):
+- **SettleMint - Login**: Authenticate with the platform
+- **Hardhat - Deploy to platform network**: Deploy contracts
+- **The Graph - Deploy or update the subgraph**: Deploy subgraph
+
+## Testing
+
+```bash
+# Run all tests
+forge test
+
+# Run with gas report
+forge test --gas-report
+
+# Run specific test file
+forge test --match-path test/ERC6551Registry.t.sol
+```
+
 ## Documentation
 
 - Additional documentation can be found in the [docs folder](./docs).

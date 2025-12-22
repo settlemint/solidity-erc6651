@@ -6,6 +6,29 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "strictBuiltinIteratorReturn": true,
+    "alwaysStrict": true,
+    "useUnknownInCatchVariables": true,
+    "allowSyntheticDefaultImports": true,
+    "plugins": [
+      {
+        "name": "gql.tada/ts-plugin",
+        "trackFieldUsage": false,
+        "shouldCheckForColocatedFragments": false,
+        "schemas": []
+      }
+    ],
+    "paths": {
+      "@schemas/*": [
+        "./*.d.ts"
+      ]
+    }
   }
 }
