@@ -218,6 +218,46 @@ function execute(
 - Only callable by the current NFT owner (reverts with `NotAuthorized()` otherwise).
 - Emits: `Executed(to, value, data, operation)`
 
+### How the TBA Knows Which NFT It Belongs To (and Who the Owner Is)
+
+A common question: `createAccount()` does not verify NFT ownership -- anyone can call it for any NFT. So how does the system know who controls the account?
+
+The answer is that **identity** and **authorization** are handled at different times:
+
+**At creation time**, the Registry bakes the NFT's `tokenContract` and `tokenId` into the TBA's bytecode. That is how the account permanently knows which NFT it is linked to.
+
+**At execution time**, when someone calls `execute()`, the TBA performs a live ownership check:
+
+```
+execute() called by msg.sender
+    │
+    ▼
+_isValidSigner(msg.sender)
+    │
+    ▼
+owner()
+    │  reads tokenContract + tokenId from its own bytecode via token()
+    │  then calls the NFT contract:
+    ▼
+IERC721(tokenContract).ownerOf(tokenId)   ← "who owns this NFT right now?"
+    │
+    ▼
+if msg.sender == ownerOf result  →  allow
+if msg.sender != ownerOf result  →  revert NotAuthorized()
+```
+
+The key insight: **ownership is always queried live from the NFT contract**. The TBA does not store the owner's address. Instead, every time `execute()` is called, the TBA:
+
+1. Calls `token()` to read the NFT contract address and token ID from its own bytecode
+2. Calls `ownerOf(tokenId)` on the NFT contract to get the current holder
+3. Compares the result to `msg.sender`
+
+This means:
+
+- **If Alice transfers the NFT to Bob**, Bob immediately controls the TBA -- no update to the TBA is needed.
+- **All assets inside the TBA** (ETH, ERC-20 tokens, other NFTs) transfer with the NFT automatically.
+- **The previous owner** (Alice) is immediately locked out and can no longer call `execute()`.
+
 ### Step 1: Mint an NFT
 
 First, you need an NFT. Using the deployed `ExampleNFT` contract:
