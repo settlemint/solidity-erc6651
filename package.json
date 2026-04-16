@@ -48,7 +48,7 @@
     "@settlemint/sdk-cli": "2.6.12",
     "hardhat": "2.28.6",
     "solhint": "6.0.1",
-    "viem": "^2.42.1"
+    "viem": "2.48.0"
   },
   "overrides": {
     "@graphprotocol/graph-cli": "0.96.0",
