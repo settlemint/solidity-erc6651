@@ -71,12 +71,12 @@ jobs:
     runs-on: namespace-profile-btp-scs
     steps:
       - name: Setup 1Password
-        uses: 1password/load-secrets-action/configure@v3
+        uses: 1password/load-secrets-action/configure@v3.2.1
         with:
           service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
       - name: Load secrets
-        uses: 1password/load-secrets-action@v3
+        uses: 1password/load-secrets-action@v3.2.1
         with:
           export-env: true
         env:
@@ -84,12 +84,12 @@ jobs:
           PAT_TOKEN: op://platform/github-commit-pat/credential
 
       - name: Checkout
-        uses: namespacelabs/nscloud-checkout-action@v7
+        uses: namespacelabs/nscloud-checkout-action@v7.1.0
         with:
           token: ${{ env.PAT_TOKEN }}
 
       - name: Setup caches
-        uses: namespacelabs/nscloud-cache-action@v1
+        uses: namespacelabs/nscloud-cache-action@v1.4.2
         with:
           path: |
             ./node_modules
@@ -97,9 +97,9 @@ jobs:
             ~/.bun/install/cache
 
       - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
+        uses: foundry-rs/foundry-toolchain@v1.7.0
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6.3.0
         with:
           node-version: 24.15.0
 
@@ -177,7 +177,7 @@ jobs:
           fi
 
       - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v5
+        uses: rlespinasse/github-slug-action@v5.6.0
 
       - name: Package version
         id: package-version
@@ -232,7 +232,7 @@ jobs:
             echo "\`\`\`" >> README.md
           fi
 
-      - uses: JS-DevTools/npm-publish@v4
+      - uses: JS-DevTools/npm-publish@v4.1.5
         with:
           token: ${{ env.NPM_TOKEN }}
           package: ./package.json
@@ -243,7 +243,7 @@ jobs:
 
       - name: Create or update a comment
         if: ${{ github.event_name == 'pull_request' }}
-        uses: taoliujun/action-unique-comment@v1
+        uses: taoliujun/action-unique-comment@v1.0.1
         with:
           uniqueIdentifier: ${{ github.workflow }}
           body: |
@@ -252,14 +252,14 @@ jobs:
             | ------- | -------------------- |
             | Template Set | `bun add @${{ github.repository_owner }}/${{ github.repository }}@${{ env.VERSION }}` |
 
-      - uses: stefanzweifel/git-auto-commit-action@v7
+      - uses: stefanzweifel/git-auto-commit-action@v7.1.0
         if: env.TAG == 'latest' && github.repository != 'settlemint/solidity-predeployed'
         with:
           commit_message: "chore: update package versions [skip ci]"
           branch: main
           file_pattern: "package.json README.md"
 
-      - uses: stefanzweifel/git-auto-commit-action@v7
+      - uses: stefanzweifel/git-auto-commit-action@v7.1.0
         if: env.TAG == 'latest' && github.repository == 'settlemint/solidity-predeployed'
         with:
           commit_message: "chore: update package versions [skip ci]"
@@ -267,16 +267,16 @@ jobs:
           file_pattern: "package.json README.md all_allocations.json"
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v3.7.0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3.12.0
 
       - name: Install Cosign
-        uses: sigstore/cosign-installer@v3
+        uses: sigstore/cosign-installer@v3.10.1
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v3.7.0
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
@@ -284,7 +284,7 @@ jobs:
 
       - name: Docker meta
         id: docker_meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v5.10.0
         with:
           images: |
             ghcr.io/${{ github.repository }}
@@ -298,7 +298,7 @@ jobs:
             type=sha
 
       - name: Build and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v6.19.2
         id: build-and-push
         with:
           platforms: linux/amd64,linux/arm64
